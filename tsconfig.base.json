@@ -3,9 +3,13 @@
   "compilerOptions": {
     // build es2022 modules by default
     "target": "ES2022",
-    "module": "CommonJS",
-    "lib": ["ES2022"],
-    "types": ["node", "jest"],
+    "module": "nodenext",
+    "lib": [
+      "ES2022"
+    ],
+    "types": [
+      "node"
+    ],
     "moduleResolution": "node",
     "importHelpers": true,
     "esModuleInterop": true,

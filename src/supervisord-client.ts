@@ -1,63 +1,41 @@
-import { UrlWithStringQuery, parse } from "url";
-import { Client, createClient } from "xmlrpc";
-import { $SupervisorMethod, SupervisordClientMethod } from "./methods";
+import { $SupervisorMethod, SupervisordClientMethod } from './methods';
+import { XmlRpcClient, XmlRpcValue } from './xmlrpc';
 
 export interface SupervisordClientOptions {
-  username: string;
-  password: string;
+    username: string;
+    password: string;
 }
 
 export class SupervisordClient extends SupervisordClientMethod {
-  private client: Client;
+    private client: XmlRpcClient;
 
-  constructor(host: string, options?: SupervisordClientOptions) {
-    super();
+    constructor(connectionUrl: string, options?: SupervisordClientOptions) {
+        super();
 
-    let hostParts: UrlWithStringQuery;
-    let basicAuth: { user: string; pass: string };
-
-    if (typeof host == "string") {
-      if (host.indexOf("http") !== 0) {
-        host = "http://" + host;
-      }
-      hostParts = parse(host, false);
-      if (options) {
-        basicAuth = {
-          user: options.username,
-          pass: options.password,
-        };
-      }
-    } else if (host) {
-      hostParts = host;
+        this.client = new XmlRpcClient(connectionUrl, {
+            encoding: 'utf-8',
+            headers: this.createHeaders(options),
+        });
     }
 
-    if (!hostParts.hostname) hostParts.hostname = "localhost";
-    if (!hostParts.port) hostParts.port = "9001";
+    async _call(method: string, params: XmlRpcValue[]): Promise<XmlRpcValue> {
+        return this.client.methodCall(method, params);
+    }
 
-    this.client = createClient({
-      host: hostParts.hostname,
-      port: parseInt(hostParts.port),
-      path: "/RPC2",
-      basic_auth: basicAuth,
-    });
-  }
+    private createHeaders(options?: SupervisordClientOptions) {
+        if (!options) {
+            return undefined;
+        }
 
-  _call(method: string, params: any[], callback: (err: any, result: object) => void) {
-    this.client.methodCall(method, params, callback);
-  }
+        const { username, password } = options;
+        const encoded = Buffer.from(username + ':' + password).toString('base64');
+        return { Authorization: `Basic ${encoded}` };
+    }
 }
 
 $SupervisorMethod.forEach((method) => {
-  const methodName = method.split(".").pop();
-  SupervisordClient.prototype[methodName] = function (...params: any) {
-    return new Promise((resolve, reject) => {
-      this._call(method, params, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  };
+    const methodName = method.split('.').pop();
+    (SupervisordClient.prototype as any)[methodName] = function (...params: XmlRpcValue[]) {
+        return this._call(method, params);
+    };
 });

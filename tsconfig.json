@@ -3,6 +3,12 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": "./",
+    "moduleResolution": "nodenext",
     "outDir": "./dist"
-  }
+  },
+  "exclude": [
+    "xmlrpc",
+    "node_modules",
+    "dist"
+  ]
 }
