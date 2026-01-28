@@ -23,9 +23,7 @@
     "prepare": "husky",
     "prebuild": "rimraf dist",
     "format": "prettier --write .",
-    "build": "tsc -b tsconfig.build.json",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "lint-staged": "lint-staged"
+    "build": "tsc -b tsconfig.build.json"
   },
   "devDependencies": {
     "@types/sax": "^1.2.7",
