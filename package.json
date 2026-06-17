@@ -1,6 +1,6 @@
 {
   "name": "@kastov/node-supervisord",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A Node.js library for communicating with the Supervisord XML-RPC API",
   "keywords": [
     "supervisor",
@@ -50,8 +50,8 @@
   },
   "dependencies": {
     "byte-base64": "^1.1.0",
-    "got": "^14.4.5",
-    "sax": "^1.4.1",
-    "xmlbuilder2": "^3.1.1"
+    "got": "^15.0.5",
+    "sax": "^1.6.0",
+    "xmlbuilder2": "^4.0.3"
   }
 }
